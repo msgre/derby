@@ -1,0 +1,194 @@
+{% extends "bone.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <h1>Sezóna {{ year_date_from|date:"Y" }}&ndash;{{ year_date_to|date:"Y" }}</h1>
+    <div class="row">
+        {# vysledky za mesice #}
+        <div class="col-md-7">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Výsledky po měsících</h4>
+                    <p>
+                        Každý měsíc vyhlašujeme tři nejlepší čtenářky a čtenáře.
+                        To abychom na první pohled věděli kdo je nejvíc.
+                    </p>
+                    <p>
+                        Nicméně i my ostatní (čtvrtí, pátí, šestí, ...) čteme
+                        a někdy nám první příčky uniknou jen o vlásek. Proto 
+                        nezapomeňte kliknout na červené tlačítko pod stupni vítězů
+                        a mrkněte i na nás. Síme vás.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Celkové výsledky</h4>
+                    <p>
+                        Tak schválně. Tipli byste si, že jsme dohromady nad knížkama
+                        strávili už <span class="badge">{{ total_hours|floatformat }}</span> dní? 
+                        Pcha, a to ještě ani zdaleka nekončíme!
+                    </p>
+                    <p>
+                        Jo a kdyby vás zajímalo kdo toho čtě úplně, ale úpe nejvíc,
+                        tak se podívejte do toho modrého sloupečku. Na naše šampióny
+                        <u>nikdo</u> nemá!
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <br>
+                    <ul class="nav nav-pills nav-stacked" id="months">
+                        {% for term in terms %}
+                            <li{% if forloop.first %} class="active"{% endif %}><a id="term-a-{{ term.date_from|date:"c" }}" href="#">{{ term.date_from|date:"F Y"|title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-9" id="months-content">
+                    {% for term in terms %}
+                        <div class="term-row {% if not forloop.first %}hide{% endif %}" id="term-b-{{ term.date_from|date:"c" }}">
+                            {% comment %}
+                            <p>
+                                Tak tady to máme, kompletní výsledky za celý měsíc. Zvlášť pro
+                                holky, zvlášť pro kluky.
+                            </p>
+                            {% endcomment %}
+                            <h3>Tři nejlepší holky</h3>
+                            <table class="table podium-table">
+                                <tr>
+                                    <td class="no"></td>
+                                    <td rowspan="3" class="text-center no vert-bottom">
+                                        {% with term.girls.0 as child %}
+                                            <h4>{{ child.children }}</h4>
+                                            <br><img src="{{ child.children.photo.url }}" width="100">
+                                        {% endwith %}
+                                    </td>
+                                    <td class="no"></td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="3" class="text-center no vert-bottom">
+                                        {% with term.girls.1 as child %}
+                                            <h4>{{ child.children }}</h4>
+                                            <br><img src="{{ child.children.photo.url }}" width="100">
+                                        {% endwith %}
+                                    </td>
+                                    <td class="no"></td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="3" class="text-center no vert-bottom">
+                                        {% with term.girls.2 as child %}
+                                            <h4>{{ child.children }}</h4>
+                                            <br><img src="{{ child.children.photo.url }}" width="100">
+                                        {% endwith %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><h1>2</h1></td>
+                                    <td class="text-center"><h1>1</h1></td>
+                                    <td class="text-center"><h1>3</h1></td>
+                                </tr>
+                            </table>
+
+                            <h3>Tři nejlepší kluci</h3>
+                            <table class="table podium-table">
+                                <tr>
+                                    <td class="no"></td>
+                                    <td rowspan="3" class="text-center no vert-bottom">
+                                        {% with term.boys.0 as child %}
+                                            <h4>{{ child.children }}</h4>
+                                            <br><img src="{{ child.children.photo.url }}" width="100">
+                                        {% endwith %}
+                                    </td>
+                                    <td class="no"></td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="3" class="text-center no vert-bottom">
+                                        {% with term.boys.1 as child %}
+                                            <h4>{{ child.children }}</h4>
+                                            <br><img src="{{ child.children.photo.url }}" width="100">
+                                        {% endwith %}
+                                    </td>
+                                    <td class="no"></td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="3" class="text-center no vert-bottom">
+                                        {% with term.boys.2 as child %}
+                                            <h4>{{ child.children }}</h4>
+                                            <br><img src="{{ child.children.photo.url }}" width="100">
+                                        {% endwith %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><h1>2</h1></td>
+                                    <td class="text-center"><h1>1</h1></td>
+                                    <td class="text-center"><h1>3</h1></td>
+                                </tr>
+                            </table>
+
+                            <h3>Zbytek třídy</h3>
+                            <p>
+                                Ano, ano. I my, zbytek <em>čtvrtébé</em>, čteme. A budeme velice rádi,
+                                když se podíváte jak (protože to je mimo jiné i velmi interesantní).
+                            </p>
+                            <p class="text-center">
+                                <br>
+                                <a class="btn btn-primary btn-lg" href="{% url "readings_monthly" term.date_from.year term.date_from.month|stringformat:"02d" %}">Kompletní výsledková listina za {{ term.date_from|date:"F Y" }}</a>
+                            </p>
+                            <br><br><br>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-1">&nbsp;</div>
+
+        {# celkove vysledky #}
+        <div class="col-md-4">
+            <h3>Deset mistrů</h3>
+            <table class="table">
+                {% for item in total %}
+                    <tr>
+                        <td class="vert-align" width="1%"><h4>{{ forloop.counter }}.</h4></td>
+                        <td class="vert-align"><img src="{{ item.children.photo.url }}" width="40"></td>
+                        <td class="vert-align"><h4>{{ item.children }}</h4></td>
+                        <td class="vert-align text-right">{{ item.hours|floatformat }} hodin</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#months a').click(function(){
+                var $el = $(this),
+                    id1 = $el.attr('id'),
+                    id2 = id1.replace('-a-', '-b-');
+
+                // zmena v menu
+                $el.closest('ul').find('li.active').removeClass('active');
+                $el.closest('li').addClass('active');
+
+                // zmnena v zobrazeni obsahu
+                $('#months-content .term-row:not(.hide)').addClass('hide');
+                $('#months-content #' + id2).removeClass('hide');
+
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "bone.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <h1>Sezóna {{ year_date_from|date:"Y" }}&ndash;{{ year_date_to|date:"Y" }}</h1>
+    <div class="row">
+                <div class="col-md-2">
+                    <br>
+                    <ul class="nav nav-pills nav-stacked">
+                        {% for term in terms %}
+                            <li{% if forloop.first %} class="active"{% endif %}><a href="#">{{ term.date_from|date:"F Y"|title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-10">
+                    {% for term in terms %}
+                        <div class="row {% if not forloop.first %} hide{% endif %}">
+                            <div class="col-md-6">
+                                <h3>Tři nejlepší holky</h3>
+                                <table class="table podium-table">
+                                    <tr>
+                                        <td class="no"></td>
+                                        <td rowspan="3" class="text-center no vert-bottom">
+                                            {% with term.girls.0 as child %}
+                                                <h4>{{ child.children }}</h4>
+                                                <br><img src="{{ child.children.photo.url }}" height="100">
+                                            {% endwith %}
+                                        </td>
+                                        <td class="no"></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" class="text-center no vert-bottom">
+                                            {% with term.girls.1 as child %}
+                                                <h4>{{ child.children }}</h4>
+                                                <br><img src="{{ child.children.photo.url }}" height="100">
+                                            {% endwith %}
+                                        </td>
+                                        <td class="no"></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" class="text-center no vert-bottom">
+                                            {% with term.girls.2 as child %}
+                                                <h4>{{ child.children }}</h4>
+                                                <br><img src="{{ child.children.photo.url }}" height="100">
+                                            {% endwith %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"><h1>2</h1></td>
+                                        <td class="text-center"><h1>1</h1></td>
+                                        <td class="text-center"><h1>3</h1></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h3>Tři nejlepší kluci</h3>
+                                <table class="table podium-table">
+                                    <tr>
+                                        <td class="no"></td>
+                                        <td rowspan="3" class="text-center no vert-bottom">
+                                            {% with term.boys.0 as child %}
+                                                <h4>{{ child.children }}</h4>
+                                                <br><img src="{{ child.children.photo.url }}" height="100">
+                                            {% endwith %}
+                                        </td>
+                                        <td class="no"></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" class="text-center no vert-bottom">
+                                            {% with term.boys.1 as child %}
+                                                <h4>{{ child.children }}</h4>
+                                                <br><img src="{{ child.children.photo.url }}" height="100">
+                                            {% endwith %}
+                                        </td>
+                                        <td class="no"></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" class="text-center no vert-bottom">
+                                            {% with term.boys.2 as child %}
+                                                <h4>{{ child.children }}</h4>
+                                                <br><img src="{{ child.children.photo.url }}" height="100">
+                                            {% endwith %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"><h1>2</h1></td>
+                                        <td class="text-center"><h1>1</h1></td>
+                                        <td class="text-center"><h1>3</h1></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            {% comment %}
+                            <hr>
+                            <p>
+                                Zajímá vás pořadí i ostatních dětí? Nebo kolik kdo
+                                strávil času nad otevřenou knihou?
+                            </p>
+                            <p class="text-center">
+                                <a class="btn btn-primary" href="{% url "readings_monthly" term.date_from.year term.date_from.month|stringformat:"02d" %}">Prohlédněte si kompletní informace o celé třídě</a>
+                            </p>
+                            <br><br><br>
+                            {% endcomment %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+
+
+            {% comment %}
+        {# celkove vysledky #}
+        <div class="col-md-4 bg-primary">
+            <h3>Celkové výsledky</h3>
+            <p>Vyhrát v některém z měsíců je skvělý pocit. Vyhrát v celém roce ale ještě
+            lepší. Jednotlivé načtené minuty poctivě sčítáme a vyhodnocujeme
+            z nich celkové pořadí.</p>
+            <table class="table">
+                {% for item in total %}
+                    <tr>
+                        <td class="vert-align" width="1%"><h4>{{ forloop.counter }}.</h4></td>
+                        <td class="vert-align"><img src="{{ item.children.photo.url }}" width="40"></td>
+                        <td class="vert-align"><h4>{{ item.children }}</h4></td>
+                        <td class="vert-align text-right">{{ item.hours|floatformat }} hodin</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+            {% endcomment %}
+
+    </div>
+{% endblock %}

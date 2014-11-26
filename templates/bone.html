@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Čtenářské derby</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+
+    {% block header %}{% endblock %}
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .table tbody>tr>td.vert-bottom{
+            vertical-align: bottom;
+        }
+        .table tbody>tr>td.vert-align{
+            vertical-align: middle;
+        }
+        .bg-warning, .bg-danger {
+            padding: 5px 10px;
+            margin: 1em 0;
+        }
+        .bg-primary .table>tbody>tr>td{
+            border-top-color:#65A5DA;
+        }
+        .table.podium-table tbody>tr>td {
+            border:none;
+            background:#ddd;
+        }
+        .table.podium-table tbody>tr>td.no {
+            background:none;
+        }
+        .table.podium-table tbody>tr>td>h3,
+        .table.podium-table tbody>tr>td>h4 {
+            margin:0;
+            padding:0;
+            line-height:0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

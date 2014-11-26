@@ -1,0 +1,15 @@
+{% extends "bone.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <br>
+            <br>
+            <br>
+            <h1>Knižní derby</h1>
+            <h3>Čteme jako o závod</h3>
+            <p><br><a class="btn btn-danger" href="{% url "readings_yearly" 2014 2015 %}">Sleduj! Sezóna 2014-2015</a></p>
+        </div>
+    </div>
+{% endblock %}

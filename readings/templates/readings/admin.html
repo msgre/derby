@@ -1,0 +1,111 @@
+{% extends "bone.html" %}
+{% load staticfiles readings %}
+
+{% block content %}
+    <form role="form" action="{{ request.path }}" method="post">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>{{ main_date|date:"F Y"|title }} &nbsp;<small><small><a href="{% url "readings_monthly" main_date.year main_date.month %}">Šup na veřejnou stránku &rarr;</a></small></small></h1>
+            </div>
+            <div class="col-md-4">
+                <br>
+                <p class="text-right"><a href="{% url "django.contrib.auth.views.logout" %}">Odhlášení</a></p>
+            </div>
+        </div>
+        <div class="row">
+            {# navigace pro vyber mesice #}
+            <div class="col-md-2">
+                <h3>Období</h3>
+                <ul class="nav nav-pills nav-stacked">
+                    {% for term in terms %}
+                        <li{% if term.date_from.month == main_date.month %} class="active"{% endif %}>
+                            <a href="{% url "admin_month" term.get_year_interval.0 term.get_year_interval.1 term.date_from.month %}">
+                                {{ term.date_from|date:"F Y"|title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {# tabulka s prehledem decek a policky pro zadani casu #}
+            <div class="col-md-6">
+                <h3>Statistiky</h3>
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="bg-warning">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+                {% if form.non_field_errors %}
+                    <div class="bg-danger">
+                        <p>Ve formuláři se objevily nějaké chyby.</p>
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% csrf_token %}
+                <table class="table table-hover">
+                    <tr>
+                        <th width="1%">Příjmení</td>
+                        <th width="1%">Jméno</td>
+                        <th>Celkem minut</th>
+                        <th>Přídavek</th>
+                    </tr>
+                    {% for child in childrens %}
+                        <tr{% if form|get_minutes_errors:child or form|get_add_errors:child %} class="danger"{% endif %}>
+                            <td class="vert-align" width="1%">{{ child.lastname }}</td>
+                            <td class="vert-align" width="1%">{{ child.firstname }}</td>
+                            <td class="vert-align">
+                                {{ form|get_minutes:child }}
+                                {{ form|get_minutes_errors:child }}
+                            </td>
+                            <td class="vert-align">
+                                {{ form|get_add:child }}
+                                {{ form|get_add_errors:child }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <p class="text-right">
+                    <input type="submit" class="btn btn-primary" value="Uložit">
+                </p>
+            </div>
+
+            {# napoveda #}
+            <div class="col-md-4">
+                <h3>Obecné údaje</h3>
+                <div class="form-group">
+                    {{ form.length.label_tag }}
+                    {{ form.length }}
+                    {{ form.length.errors|safe }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.note.label_tag }}
+                    {{ form.note }}
+                    {{ form.note.errors|safe }}
+                </div>
+
+                <h3>Nápověda</h3>
+                <p>
+                    Údaje se mohou do formuláře vkládat dvojí formou.
+                </p>
+                <ol>
+                    <li>
+                        Pokud je potřeba zaznamenávat údaj o čtení pouze jednou
+                        na konci měsíce, vystačíš si s prvním sloupečkem <em>"Celkem minut"</em>.<br>
+                        U každého dítěte uveď celkovou dobu, po kterou dítě v daném
+                        měsíci četlo knihy a formulář pak ulož.
+                    </li>
+                    <li>
+                        Pokud budeš chtít zaznamenávat údaje častěji, např. na konci
+                        každého týdne, bylo by otravné neustále aktulizovat celkový počet
+                        minut v prvním sloupci. Pro tyto případy můžeš využít druhý
+                        sloupeček a uvést do něj pouze změnu od minulého vkládání údajů
+                        (např. za poslední týden). Číslo zadané do sloupce
+                        <em>"Přídavek"</em> se pak přičte k celkovému počtu minut.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </form>
+{% endblock %}

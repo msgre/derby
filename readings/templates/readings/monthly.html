@@ -1,0 +1,186 @@
+{% extends "bone.html" %}
+{% load staticfiles %}
+
+{% block header %}
+    <style>
+        path {
+          fill: none;
+          stroke: none;
+        }
+        #pozadi {
+            stroke:#45901c;
+            stroke-width:30;
+            stroke-opacity:0.4;
+            fill: none;
+        }
+        circle {
+            stroke:#fff;
+            stroke-width:1;
+            stroke-opacity:.7;
+        }
+        circle.dim {
+            opacity:0.08;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-9">
+            <h1>Derby {{ date_from|date:"F Y" }}</h1>
+        </div>
+        <div class="col-md-3">
+            <br>
+            <p class="text-right">&larr; <a href="{% url "readings_yearly" term_stats.year_from term_stats.year_to %}">Zpět na přehled sezóny</a></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-11">
+                    <p><strong>Délka tratě: {{ term_stats.length }} minut</strong></p>
+                    {% if term_stats.note %}
+                        <p>{{ term_stats.note }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <br>
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               width="960"
+               height="500"
+               version="1.1"
+               id="svg">
+                <g transform="scale(1.7)">
+
+                <path
+                   id="pozadi"
+                   d="m 140.76077,22.715112 167.62131,0 c 62.68834,0 113.15583,48.295063 113.15583,108.284888 0,59.98983 -50.46749,108.28489 -113.15583,108.28489 l -167.62131,0 C 78.072426,239.28489 27.604933,190.98983 27.604933,131 c 0,-59.989825 50.467493,-108.284888 113.155837,-108.284888 z"/>
+
+                <path
+                   d="m 139.46137,17.771356 170.22011,0 c 65.55038,0 118.32199,50.499984 118.32199,113.228654 0,62.72868 -52.77161,113.22867 -118.32199,113.22867 l -170.22011,0 c -65.550385,0 -118.321991,-50.49999 -118.321991,-113.22867 0,-62.72867 52.771606,-113.228654 118.321991,-113.228654 z"
+                   id="trat1" />
+                <path
+                   d="m 140.76077,22.715112 167.62131,0 c 62.68834,0 113.15583,48.295063 113.15583,108.284888 0,59.98983 -50.46749,108.28489 -113.15583,108.28489 l -167.62131,0 C 78.072426,239.28489 27.604933,190.98983 27.604933,131 c 0,-59.989825 50.467493,-108.284888 113.155837,-108.284888 z"
+                   id="trat2" />
+                <path
+                   d="m 142.06017,27.658849 165.02254,0 c 59.82629,0 107.98972,46.090151 107.98972,103.341141 0,57.25099 -48.16343,103.34115 -107.98972,103.34115 l -165.02254,0 c -59.82631,0 -107.989718,-46.09016 -107.989718,-103.34115 0,-57.25099 48.163408,-103.341141 107.989718,-103.341141 z"
+                   id="trat3" />
+                <image id="image" xlink:href="" x="150" y="55" height="150px" width="150px"/>
+                   </g>
+            </svg>
+        </div>
+        <div class="col-md-3">
+            <p>&nbsp;</p>
+            <table class="table table-condensed" id="order">
+                {% for children in childrens %}
+                    <tr id="children-{{ children.id }}">
+                        <td width="1%"><div style="width:1.4em;background-color:{{ children.children.color|default:DEFAULT_COLOR }}">&nbsp;</div></td>
+                        <td>{{ children.children }}</td>
+                        <td class="text-right">{{ children.minutes }} minut</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    <script>
+        var data = [
+            {% for children in childrens %}
+                {% templatetag openbrace %}
+                    id:{{ children.id }},
+                    minutes:{{ children.minutes }},
+                    name: "{{ children.children }}",
+                    img: "{{ children.children.photo.url }}",
+                    color: "{{ children.children.color|default:'' }}"
+                {% templatetag closebrace %}{% if not forloop.last%},{% endif %}
+            {% endfor %}
+        ];
+        var markers = {};
+        var images = {};
+        var circle_r = 5;
+        var svg;
+
+        function mouseover(el){
+            var id = parseInt($(el).attr('id').split('-')[1]);
+            $('#children-'+id).addClass('active');
+            markers[id].attr('r', circle_r*2);
+            _.each(markers, function(v, k){
+                if (k != id) {
+                    v.classed({dim: true});
+                }
+            });
+            svg.select('#image').attr('xlink:href', images[id]);
+        }
+        function mouseout(el) {
+            var id = parseInt($(el).attr('id').split('-')[1]);
+            $('#children-'+id).removeClass('active');
+            markers[id].attr('r', circle_r);
+            _.each(markers, function(i){
+                i.classed({dim: false});
+            });
+            svg.select('#image').attr('xlink:href', null);
+        }
+
+        function ready() {
+            svg = d3.select("svg");
+
+            var paths = [
+                svg.select("path#trat1"),
+                svg.select("path#trat2"),
+                svg.select("path#trat3")
+            ],
+            startPoints = [
+                pathStartPoint(paths[0]),
+                pathStartPoint(paths[1]),
+                pathStartPoint(paths[2])
+            ];
+
+
+            var track_length = {{ term_stats.length }};
+            var path_idx = 0;
+
+            for (var i=0; i<data.length; i++) {
+                markers[data[i].id] = svg.append('g').attr('transform', 'scale(1.7)').append("circle").attr('id', 'circle-' + data[i].id).on('mouseover', function(a){ mouseover(d3.event.target); }).on('mouseout', function(a){ mouseout(d3.event.target); });
+                images[data[i].id] = data[i].img;
+                markers[data[i].id].attr("r", circle_r).attr("transform", "translate(" + startPoints[path_idx] + ")").style('fill', data[i].color || '{{ DEFAULT_COLOR }}');
+                transition(paths[path_idx], markers[data[i].id], data[i].minutes / track_length);
+                path_idx++;
+                if (path_idx > 2) {
+                    path_idx = 0;
+                }
+            }
+
+            //Get path start point for placing marker
+            function pathStartPoint(path) {
+                var d = path.attr("d"),
+                dsplitted = d.split(" ");
+                out = dsplitted[1].split(",");
+                out[1] = out[1] - 0;
+                return out;
+            }
+
+            function transition(path, marker, pos) {
+                marker.attr("transform", translateAlong(path.node(), pos))
+            }
+
+            function translateAlong(path, t) {
+                var l = path.getTotalLength();
+                var p = path.getPointAtLength(t * l);
+                p.y = p.y - 0;
+                return "translate(" + p.x + "," + p.y + ")";
+            }
+        }
+
+        ready();
+
+        $(document).ready(function(){
+            $('#order tr').mouseover(function(){
+                mouseover(this);
+            });
+            $('#order tr').mouseout(function(){
+                mouseout(this);
+            });
+
+        });
+    </script>
+{% endblock %}
