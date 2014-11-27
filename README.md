@@ -3,7 +3,7 @@
 Instalace
 =========
 
-Derby jsou [Django][https://www.djangoproject.com/] aplikace (takže musíš mít aspoň
+Derby jsou [Django](https://www.djangoproject.com/) aplikace (takže musíš mít aspoň
 Python 2.7 a nainstalované balíčky z adresáře `requirements`).
 
 Do adresáře `derby` ulož soubor `settings.py`, a doplň patřičné údaje:
