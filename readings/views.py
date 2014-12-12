@@ -44,8 +44,7 @@ class BaseReadingView(ListView):
             }
         """
         # seznam terminu, ktere spadaji do zadaneho obdobi
-        # NOTE: bacha! nevezme to terminy, ktere lezi pres nekterou z hranic
-        terms = ReadingsTerm.objects.filter(date_from__gte=date_from, date_to__lt=date_to)
+        terms = ReadingsTerm.objects.filter(date__gte=date_from, date__lt=date_to)
 
         # vytahnem si statistiky cteni a seradime je podle casu
         stats = ReadingsRecord.objects.filter(term__id__in=terms.values_list('id', flat=True))\
@@ -66,7 +65,7 @@ class BaseReadingView(ListView):
         """
         Udaje o terminu.
         """
-        terms = ReadingsTerm.objects.filter(date_from__gte=date_from, date_to__lt=date_to).order_by('date_from')
+        terms = ReadingsTerm.objects.filter(date__gte=date_from, date__lt=date_to).order_by('date')
         term = terms[0].get_year_interval()
         out = {'note': [], 'length': 1, 'year_from': term[0], 'year_to': term[1]}
         for term in terms:
@@ -99,9 +98,9 @@ class YearlyReadingsView(BaseReadingView):
         (self.year_date_from, self.year_date_to) = self.get_terms()
 
         # seznam obdobi, ve kterem decka neco cetla
-        dates = ReadingsTerm.objects.filter(date_from__gte=self.year_date_from, \
-                                            date_to__lt=self.year_date_to)\
-                                    .dates('date_from', 'month').order_by('-date_from')
+        dates = ReadingsTerm.objects.filter(date__gte=self.year_date_from, \
+                                            date__lt=self.year_date_to)\
+                                    .dates('date', 'month').order_by('-date')
 
         # nejlepsi ctenari za jednotliva obdobi (mesice), rozdeleno na holky/kluky
         self.terms = []
@@ -120,10 +119,10 @@ class YearlyReadingsView(BaseReadingView):
         return dates
 
     def get_total_hours(self):
-        ids = ReadingsTerm.objects.filter(date_from__gte=self.year_date_from, \
-                                          date_to__lt=self.year_date_to).values_list('id', flat=True)
+        ids = ReadingsTerm.objects.filter(date__gte=self.year_date_from, \
+                                          date__lt=self.year_date_to).values_list('id', flat=True)
         minutes = ReadingsRecord.objects.filter(term__id__in=ids).aggregate(Sum('minutes'))
-        return minutes['minutes__sum'] / (60.0 * 24)
+        return (minutes['minutes__sum'] or 0) / (60.0 * 24)
 
 
     def get_context_data(self, **kwargs):

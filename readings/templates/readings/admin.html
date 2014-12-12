@@ -18,9 +18,9 @@
                 <h3>Období</h3>
                 <ul class="nav nav-pills nav-stacked">
                     {% for term in terms %}
-                        <li{% if term.date_from.month == main_date.month %} class="active"{% endif %}>
-                            <a href="{% url "admin_month" term.get_year_interval.0 term.get_year_interval.1 term.date_from.month %}">
-                                {{ term.date_from|date:"F Y"|title }}
+                        <li{% if term.date.month == main_date.month %} class="active"{% endif %}>
+                            <a href="{% url "admin_month" term.get_year_interval.0 term.get_year_interval.1 term.date.month %}">
+                                {{ term.date|date:"F Y"|title }}
                             </a>
                         </li>
                     {% endfor %}

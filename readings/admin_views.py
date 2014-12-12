@@ -27,30 +27,26 @@ def handle_terms(year_from, year_to):
     """
     # nalezeni vsech zaznamu pro dany skolni rok
     date_from = datetime(year_from, 9, 1)
-    date_to = datetime(year_to, 6, 30)
-    terms = ReadingsTerm.objects.filter(date_from__gte=date_from, date_to__lte=date_to)
+    date_to = datetime(year_to, 6, 1)
+    terms = ReadingsTerm.objects.filter(date__gte=date_from, date__lte=date_to)
     now = datetime.now()
 
     # pomocna struktura
-    dates = [str(i) for i in terms.dates('date_from', 'month')]
+    dates = [str(i) for i in terms.dates('date', 'month')]
 
     # overeni datumu do vanoc
     for month in range(9, 12 + 1):
         d = datetime(year_from, month, 1)
         if str(d) not in dates:
-            d2 = d + timedelta(days=40)
-            d2 = datetime(d2.year, d2.month, 1) - timedelta(seconds=1)
-            if d <= now and not ReadingsTerm.objects.filter(date_from=d, date_to=d2).exists():
-                ReadingsTerm.objects.create(date_from=d, date_to=d2)
+            if d <= now and not ReadingsTerm.objects.filter(date=d).exists():
+                ReadingsTerm.objects.create(date=d)
 
     # overeni datumu do prazdnin
     for month in range(1, 6 + 1):
         d = datetime(year_to, month, 1)
         if str(d) not in dates:
-            d2 = d + timedelta(days=40)
-            d2 = datetime(d2.year, d2.month, 1) - timedelta(seconds=1)
-            if d <= now and not ReadingsTerm.objects.filter(date_from=d, date_to=d2).exists():
-                ReadingsTerm.objects.create(date_from=d, date_to=d2)
+            if d <= now and not ReadingsTerm.objects.filter(date=d).exists():
+                ReadingsTerm.objects.create(date=d)
 
 
 class AdminRedirectView(View):
@@ -168,9 +164,7 @@ class AdminView(FormView):
         self.main_date.
         """
         # nalezeni terminu v zadanem intervalu
-        date_to = self.main_date + timedelta(days=40)
-        date_to = datetime(date_to.year, date_to.month, 1)
-        self.terms = ReadingsTerm.objects.filter(date_from__gte=self.main_date, date_to__lt=date_to)
+        self.terms = ReadingsTerm.objects.filter(date=self.main_date)
 
         # statistiky cteni
         readings = ReadingsRecord.objects.filter(term__id__in=self.terms.values_list('id', flat=True))\
@@ -187,6 +181,6 @@ class AdminView(FormView):
         Vrati vsechny terminy pro aktualni skolni rok. Generujeme z nej
         pomocne menu nalevo.
         """
-        qs = ReadingsTerm.objects.filter(date_from__gte=datetime(int(self.kwargs['year_from']), 9, 1),
-                                         date_to__lte=datetime(int(self.kwargs['year_to']), 6, 30))
-        return qs.order_by('-date_from')
+        qs = ReadingsTerm.objects.filter(date__gte=datetime(int(self.kwargs['year_from']), 9, 1),
+                                         date__lte=datetime(int(self.kwargs['year_to']), 6, 1))
+        return qs.order_by('-date')

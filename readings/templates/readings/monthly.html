@@ -90,7 +90,7 @@
                     id:{{ children.id }},
                     minutes:{{ children.minutes }},
                     name: "{{ children.children }}",
-                    img: "{{ children.children.photo.url }}",
+                    img: {% if children.children.photo %}"{{ children.children.photo.url }}"{% else %}null{% endif %},
                     color: "{{ children.children.color|default:'' }}"
                 {% templatetag closebrace %}{% if not forloop.last%},{% endif %}
             {% endfor %}
