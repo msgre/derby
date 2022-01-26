@@ -1,4 +1,4 @@
-Django==1.7.1
+Django==2.2.26
 Pillow==2.6.1
 redis==2.10.3
 django-extensions==1.4.4
